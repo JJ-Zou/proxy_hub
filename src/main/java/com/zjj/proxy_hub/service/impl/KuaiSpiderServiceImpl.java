@@ -35,19 +35,17 @@ public class KuaiSpiderServiceImpl implements SpiderService {
     private ProxyPool proxyPool;
 
     @SneakyThrows
-    @Scheduled(initialDelay = 2000, fixedDelay = 5 * 60 * 1000)
-    public void kuaiResolve() {
+    public void resolve() {
         int pageIndex = 1;
         while (true) {
-            log.info("快代理第{}页", pageIndex);
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
+            log.info("拉取完快代理第{}页", pageIndex);
             TimeUnit.SECONDS.sleep(1);
         }
     }
 
-    @Override
     public boolean solve_single_page(int page) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
@@ -65,11 +63,11 @@ public class KuaiSpiderServiceImpl implements SpiderService {
             int port = 0;
             for (Element child : element.children()) {
                 String value = child.attr("data-title");
-                if("IP".equals(value)){
+                if ("IP".equals(value)) {
                     host = child.text();
                     continue;
                 }
-                if("PORT".equals(value)){
+                if ("PORT".equals(value)) {
                     port = Integer.parseInt(child.text());
                     break;
                 }

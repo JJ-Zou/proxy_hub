@@ -35,8 +35,7 @@ public class Six6SpiderServiceImpl implements SpiderService {
     private ProxyPool proxyPool;
 
     @SneakyThrows
-    @Scheduled(initialDelay = 2000, fixedDelay = 5 * 60 * 1000)
-    public void six6Resolve() {
+    public void resolve() {
         int pageIndex = 1;
         while (true) {
             log.info("66代理第{}页", pageIndex);
@@ -47,7 +46,6 @@ public class Six6SpiderServiceImpl implements SpiderService {
         }
     }
 
-    @Override
     public boolean solve_single_page(int page) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
