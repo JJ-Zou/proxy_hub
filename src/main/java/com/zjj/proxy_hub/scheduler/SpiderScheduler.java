@@ -29,7 +29,7 @@ public class SpiderScheduler implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @SneakyThrows
-    @Scheduled(initialDelay = 2000, fixedDelay = 10 * 60 * 1000)
+    @Scheduled(initialDelay = 2000, fixedDelay = 5 * 60 * 1000)
     public void ScheduleResolve() {
         if (proxyPool.size() > 0) {
             return;

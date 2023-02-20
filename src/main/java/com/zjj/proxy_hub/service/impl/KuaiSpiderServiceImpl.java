@@ -37,7 +37,7 @@ public class KuaiSpiderServiceImpl implements SpiderService {
     @SneakyThrows
     public void resolve() {
         int pageIndex = 1;
-        while (true) {
+        while (pageIndex <= 10) {
             if (!solve_single_page(pageIndex++)) {
                 return;
             }

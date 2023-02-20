@@ -14,7 +14,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -24,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class Six6SpiderServiceImpl implements SpiderService {
+public class Ip89SpiderServiceImpl implements SpiderService {
 
-    private static final String URL = "http://www.66ip.cn/";
+    private static final String URL = "https://www.89ip.cn/index_";
 
     @Autowired
     private RestTemplate six6RestTemplate;
@@ -37,8 +36,8 @@ public class Six6SpiderServiceImpl implements SpiderService {
     @SneakyThrows
     public void resolve() {
         int pageIndex = 1;
-        while (pageIndex <= 10) {
-            log.info("66代理第{}页", pageIndex);
+        while (pageIndex < 30) {
+            log.info("89ip第{}页", pageIndex);
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
@@ -57,15 +56,10 @@ public class Six6SpiderServiceImpl implements SpiderService {
             return false;
         }
         Document document = Jsoup.parse(html);
-        Elements elements = document.select(".container table tbody tr");
-        int idx = 0;
+        Elements elements = document.select(".layui-table tbody tr");
         for (Element element : elements) {
-            idx++;
-            if (idx == 1) {
-                continue;
-            }
-            String host = element.child(0).text();
-            int port = Integer.parseInt(element.child(1).text());
+            String host = element.child(0).text().trim();
+            int port = Integer.parseInt(element.child(1).text().trim());
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
         }
         return true;

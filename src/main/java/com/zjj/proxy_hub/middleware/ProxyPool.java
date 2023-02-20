@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Component
 public class ProxyPool {
@@ -17,12 +16,13 @@ public class ProxyPool {
     public int size() {
         return proxyPool.size();
     }
+
     public List<ProxyIp> listAll() {
         return new ArrayList<>(proxyPool);
     }
 
     public synchronized ProxyIp popProxy() {
-        if(proxyPool.isEmpty()) {
+        if (proxyPool.isEmpty()) {
             return null;
         }
         ProxyIp ip = proxyPool.iterator().next();
