@@ -26,12 +26,12 @@ public class ApiRequestAspect {
         try {
             final Object result = joinPoint.proceed();
             final long end = System.currentTimeMillis();
-            log.info("方法 {} 执行成功, 参数为 {}, 返回值为 {}, 耗时 {} ms.", joinPoint.getSignature().getDeclaringTypeName(),
+            log.info("方法 {} 执行成功, 参数为 {}, 返回值为 {}, 耗时 {} ms.", joinPoint.getSignature().getName(),
                     Arrays.toString(joinPoint.getArgs()), result, end - start);
             return result;
         } catch (Throwable e) {
             final long end = System.currentTimeMillis();
-            log.info("方法 {} 执行失败, 参数为 {}, 异常为 {}, 耗时 {} ms.", joinPoint.getSignature().getDeclaringTypeName(),
+            log.info("方法 {} 执行失败, 参数为 {}, 异常为 {}, 耗时 {} ms.", joinPoint.getSignature().getName(),
                     Arrays.toString(joinPoint.getArgs()), e, end - start);
             throw e;
         }
