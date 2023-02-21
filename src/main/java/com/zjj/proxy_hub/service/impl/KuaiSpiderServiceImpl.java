@@ -14,7 +14,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -29,7 +28,7 @@ public class KuaiSpiderServiceImpl implements SpiderService {
     private static final String URL = "https://www.kuaidaili.com/free/inha/";
 
     @Autowired
-    private RestTemplate six6RestTemplate;
+    private RestTemplate restTemplateGb2312;
 
     @Autowired
     private ProxyPool proxyPool;
@@ -50,27 +49,31 @@ public class KuaiSpiderServiceImpl implements SpiderService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = six6RestTemplate.exchange(URL + page, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page, HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
-            System.out.println(html);
+            log.error("拉取错误 {}", html);
             return false;
         }
         Document document = Jsoup.parse(html);
         Elements elements = document.select("#list > table > tbody tr");
         for (Element element : elements) {
-            String host = "localhost";
-            int port = 0;
+            String host = null;
+            int port = -1;
             for (Element child : element.children()) {
                 String value = child.attr("data-title");
                 if ("IP".equals(value)) {
-                    host = child.text();
+                    host = child.text().trim();
                     continue;
                 }
                 if ("PORT".equals(value)) {
-                    port = Integer.parseInt(child.text());
+                    port = Integer.parseInt(child.text().trim());
                     break;
                 }
+            }
+            if (host == null || port == -1) {
+                log.warn("快代理解析ip或端口错误, skip.");
+                continue;
             }
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
         }

@@ -16,7 +16,7 @@ import java.util.List;
 public class Config {
 
     @Bean
-    public RestTemplate six6RestTemplate() {
+    public RestTemplate restTemplateGb2312() {
         RestTemplate restTemplate = new RestTemplate();
         List<HttpMessageConverter<?>> httpMessageConverters = restTemplate.getMessageConverters();
         httpMessageConverters.forEach(httpMessageConverter -> {

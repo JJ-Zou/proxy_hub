@@ -28,7 +28,7 @@ public class Ip89SpiderServiceImpl implements SpiderService {
     private static final String URL = "https://www.89ip.cn/index_";
 
     @Autowired
-    private RestTemplate six6RestTemplate;
+    private RestTemplate restTemplateGb2312;
 
     @Autowired
     private ProxyPool proxyPool;
@@ -37,10 +37,10 @@ public class Ip89SpiderServiceImpl implements SpiderService {
     public void resolve() {
         int pageIndex = 1;
         while (pageIndex < 30) {
-            log.info("89ip第{}页", pageIndex);
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
+            log.info("拉取完89ip第{}页", pageIndex);
             TimeUnit.SECONDS.sleep(1);
         }
     }
@@ -49,10 +49,10 @@ public class Ip89SpiderServiceImpl implements SpiderService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = six6RestTemplate.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
-            System.out.println(html);
+            log.error("拉取错误 {}", html);
             return false;
         }
         Document document = Jsoup.parse(html);

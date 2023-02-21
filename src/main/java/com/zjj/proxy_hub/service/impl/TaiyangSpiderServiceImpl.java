@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class Six6SpiderServiceImpl implements SpiderService {
+public class TaiyangSpiderServiceImpl implements SpiderService {
 
-    private static final String URL = "http://www.66ip.cn/";
+    private static final String URL = "https://www.tyhttp.com/free/page";
 
     @Autowired
     private RestTemplate restTemplateGb2312;
@@ -36,11 +36,11 @@ public class Six6SpiderServiceImpl implements SpiderService {
     @SneakyThrows
     public void resolve() {
         int pageIndex = 1;
-        while (pageIndex <= 10) {
+        while (pageIndex <= 20) {
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
-            log.info("拉取完66代理第{}页", pageIndex);
+            log.info("拉取完太阳代理第{}页", pageIndex);
             TimeUnit.SECONDS.sleep(1);
         }
     }
@@ -49,20 +49,15 @@ public class Six6SpiderServiceImpl implements SpiderService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page +"/", HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
             log.error("拉取错误 {}", html);
             return false;
         }
         Document document = Jsoup.parse(html);
-        Elements elements = document.select(".container table tbody tr");
-        int idx = 0;
+        Elements elements = document.select(".list .tr");
         for (Element element : elements) {
-            idx++;
-            if (idx == 1) {
-                continue;
-            }
             String host = element.child(0).text().trim();
             int port = Integer.parseInt(element.child(1).text().trim());
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());

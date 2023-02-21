@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-public class Six6SpiderServiceImpl implements SpiderService {
+public class Ks1SpiderServiceImpl implements SpiderService {
 
-    private static final String URL = "http://www.66ip.cn/";
+    private static final String URL = "http://www.kxdaili.com/dailiip/1/";
 
     @Autowired
     private RestTemplate restTemplateGb2312;
@@ -40,7 +40,7 @@ public class Six6SpiderServiceImpl implements SpiderService {
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
-            log.info("拉取完66代理第{}页", pageIndex);
+            log.info("拉取完ks高匿代理第{}页", pageIndex);
             TimeUnit.SECONDS.sleep(1);
         }
     }
@@ -56,13 +56,8 @@ public class Six6SpiderServiceImpl implements SpiderService {
             return false;
         }
         Document document = Jsoup.parse(html);
-        Elements elements = document.select(".container table tbody tr");
-        int idx = 0;
+        Elements elements = document.select(".active tbody tr");
         for (Element element : elements) {
-            idx++;
-            if (idx == 1) {
-                continue;
-            }
             String host = element.child(0).text().trim();
             int port = Integer.parseInt(element.child(1).text().trim());
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
