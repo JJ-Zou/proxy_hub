@@ -3,7 +3,6 @@ package com.zjj.proxy_hub.service.impl;
 import com.zjj.proxy_hub.middleware.ProxyPool;
 import com.zjj.proxy_hub.model.ProxyIp;
 import com.zjj.proxy_hub.service.SpiderService;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,13 +18,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.concurrent.TimeUnit;
-
 @Slf4j
 @Service
-public class Six6SpiderServiceImpl implements SpiderService {
+public class SeoSpiderServiceImpl implements SpiderService {
 
-    private static final String URL = "http://www.66ip.cn/";
+    private static final String URL = "https://proxy.seofangfa.com/";
 
     @Autowired
     private RestTemplate restTemplateGb2312;
@@ -33,29 +30,29 @@ public class Six6SpiderServiceImpl implements SpiderService {
     @Autowired
     private ProxyPool proxyPool;
 
+    @Override
+    public int getMaxPage() {
+        return 1;
+    }
+
     public boolean solve_single_page(int page) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL, HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
             log.error("拉取错误 {}", html);
             return false;
         }
         Document document = Jsoup.parse(html);
-        Elements elements = document.select(".container table tbody tr");
-        int idx = 0;
+        Elements elements = document.select(".table tbody tr");
         for (Element element : elements) {
-            idx++;
-            if (idx == 1) {
-                continue;
-            }
             String host = element.child(0).text().trim();
             int port = Integer.parseInt(element.child(1).text().trim());
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
         }
-        log.info("拉取完66代理第{}页", page);
+        log.info("拉取完seo代理第{}页", page);
         return true;
     }
 }

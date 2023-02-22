@@ -28,8 +28,13 @@ public class SpiderScheduler implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
     @SneakyThrows
-    @Scheduled(initialDelay = 2000, fixedDelay = 5 * 60 * 1000)
+    @Scheduled(initialDelay = 2000, fixedDelay = 2 * 60 * 1000)
     public void ScheduleResolve() {
         if (proxyPool.size() > 0) {
             return;
@@ -40,8 +45,4 @@ public class SpiderScheduler implements ApplicationContextAware {
         }
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 }

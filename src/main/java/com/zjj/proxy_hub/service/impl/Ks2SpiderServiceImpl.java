@@ -33,18 +33,6 @@ public class Ks2SpiderServiceImpl implements SpiderService {
     @Autowired
     private ProxyPool proxyPool;
 
-    @SneakyThrows
-    public void resolve() {
-        int pageIndex = 1;
-        while (pageIndex <= 10) {
-            if (!solve_single_page(pageIndex++)) {
-                return;
-            }
-            log.info("拉取完ks普匿代理第{}页", pageIndex);
-            TimeUnit.SECONDS.sleep(1);
-        }
-    }
-
     public boolean solve_single_page(int page) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
@@ -62,6 +50,7 @@ public class Ks2SpiderServiceImpl implements SpiderService {
             int port = Integer.parseInt(element.child(1).text().trim());
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
         }
+        log.info("拉取完ks普匿代理第{}页", page);
         return true;
     }
 }

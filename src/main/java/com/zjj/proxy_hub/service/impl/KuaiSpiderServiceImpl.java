@@ -33,16 +33,9 @@ public class KuaiSpiderServiceImpl implements SpiderService {
     @Autowired
     private ProxyPool proxyPool;
 
-    @SneakyThrows
-    public void resolve() {
-        int pageIndex = 1;
-        while (pageIndex <= 10) {
-            if (!solve_single_page(pageIndex++)) {
-                return;
-            }
-            log.info("拉取完快代理第{}页", pageIndex);
-            TimeUnit.SECONDS.sleep(1);
-        }
+    @Override
+    public long getSleepTime() {
+        return 1000;
     }
 
     public boolean solve_single_page(int page) {
@@ -77,6 +70,7 @@ public class KuaiSpiderServiceImpl implements SpiderService {
             }
             proxyPool.setProxy(ProxyIp.builder().host(host).port(port).build());
         }
+        log.info("拉取完快代理第{}页", page);
         return true;
     }
 
