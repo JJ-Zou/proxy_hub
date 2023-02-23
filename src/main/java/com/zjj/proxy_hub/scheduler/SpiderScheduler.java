@@ -25,9 +25,6 @@ public class SpiderScheduler implements ApplicationContextAware {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     @Autowired
-    private ProxyPool proxyPool;
-
-    @Autowired
     private TaskScheduler taskScheduler;
 
 
@@ -40,7 +37,7 @@ public class SpiderScheduler implements ApplicationContextAware {
 
     @Scheduled(initialDelay = 2000, fixedDelay = 2 * 60 * 1000)
     public void ScheduleResolve() throws InterruptedException {
-        if (proxyPool.size() > 0 || running.get()) {
+        if (running.get()) {
             return;
         }
         running.set(true);
