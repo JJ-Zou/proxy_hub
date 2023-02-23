@@ -58,18 +58,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
-      - name: Connect to server
-        uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Setup knownhosts
-        run: ssh-keyscan ${{ secrets.DEPLOYMENT_HOST }} >> ~/.ssh/known_hosts
-
       - name: Trigger server deployment script
         run: |
-          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker stop ${{ env.IMAGE_NAME }} || true"
-          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker rm ${{ env.IMAGE_NAME }} || true"
-          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker pull ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
-          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker run -p ${{ env.PORT }}:${{ env.PORT}} --name ${{ env.IMAGE_NAME }} -d --restart=always ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          sshpass -p ${{ secrets.SERVER_PASSWARD }} ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker stop ${{ env.IMAGE_NAME }} || true"
+          sshpass -p ${{ secrets.SERVER_PASSWARD }} ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker rm ${{ env.IMAGE_NAME }} || true"
+          sshpass -p ${{ secrets.SERVER_PASSWARD }} ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker pull ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          sshpass -p ${{ secrets.SERVER_PASSWARD }} ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker run -p ${{ env.PORT }}:${{ env.PORT}} --name ${{ env.IMAGE_NAME }} -d --restart=always ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
 
