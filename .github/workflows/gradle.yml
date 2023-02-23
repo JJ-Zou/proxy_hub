@@ -36,7 +36,7 @@ jobs:
         distribution: 'temurin'
     
     - name: chmod for gradlew
-      run: chmod -x gradlew
+      run: chmod -x ./gradlew
         
     - name: Build with Gradle
       run: ./gradlew bootJar -x test
@@ -45,6 +45,7 @@ jobs:
       if: github.event_name != 'pull_request'
       uses: docker/login-action@v2
       with:
+        local: "build/libs/proxy_hub-0.0.1-SNAPSHOT.jar"
         registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
