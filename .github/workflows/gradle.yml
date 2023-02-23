@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "feat/init-ci" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -68,8 +68,8 @@ jobs:
 
       - name: Trigger server deployment script
         run: |
+          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker pull ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
           ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker stop ${{ env.IMAGE_NAME }} || true"
           ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker rm ${{ env.IMAGE_NAME }} || true"
-          ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker pull ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
           ssh root@${{ secrets.DEPLOYMENT_HOST }} "docker run -p ${{ env.PORT }}:${{ env.PORT}} --name ${{ env.IMAGE_NAME }} -d --restart=always ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
 
