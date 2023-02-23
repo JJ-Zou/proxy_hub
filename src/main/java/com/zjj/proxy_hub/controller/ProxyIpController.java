@@ -3,6 +3,7 @@ package com.zjj.proxy_hub.controller;
 import com.zjj.proxy_hub.controller.resp.ProxyIpResponse;
 import com.zjj.proxy_hub.middleware.ProxyPool;
 import com.zjj.proxy_hub.model.ProxyIp;
+import com.zjj.proxy_hub.scheduler.SpiderScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

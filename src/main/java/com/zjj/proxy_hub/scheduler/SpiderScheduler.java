@@ -14,10 +14,15 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
 public class SpiderScheduler implements ApplicationContextAware {
+
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     @Autowired
     private ProxyPool proxyPool;
@@ -33,16 +38,22 @@ public class SpiderScheduler implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    @SneakyThrows
     @Scheduled(initialDelay = 2000, fixedDelay = 2 * 60 * 1000)
-    public void ScheduleResolve() {
-        if (proxyPool.size() > 0) {
+    public void ScheduleResolve() throws InterruptedException {
+        if (proxyPool.size() > 0 || running.get()) {
             return;
         }
+        running.set(true);
         Map<String, SpiderService> beansOfType = applicationContext.getBeansOfType(SpiderService.class);
+        CountDownLatch countDownLatch = new CountDownLatch(beansOfType.size());
         for (SpiderService spiderService : beansOfType.values()) {
-            taskScheduler.schedule(spiderService::resolve, Instant.now());
+            taskScheduler.schedule(() -> {
+                spiderService.resolve();
+                countDownLatch.countDown();
+            }, Instant.now());
         }
+        countDownLatch.await();
+        running.set(false);
     }
 
 }
