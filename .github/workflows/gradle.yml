@@ -9,9 +9,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches: [ "test/ci" ]
 
 env:
   REGISTRY: docker.io
@@ -25,7 +23,7 @@ permissions:
 
 jobs:
   build:
-
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -58,6 +56,13 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
+  deploy:
+
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
       - name: Connect to server
         uses: webfactory/ssh-agent@v0.4.1
         with:
