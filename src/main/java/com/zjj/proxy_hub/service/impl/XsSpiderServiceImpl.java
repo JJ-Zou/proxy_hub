@@ -45,7 +45,7 @@ public class XsSpiderServiceImpl implements SpiderService {
     }
 
     @Override
-    public void resolve() {
+    public void resolve() throws InterruptedException {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -64,11 +64,7 @@ public class XsSpiderServiceImpl implements SpiderService {
         }
         for (int page : pageSet) {
             solve_single_page(page);
-            try {
-                TimeUnit.MILLISECONDS.sleep(getSleepTime());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            TimeUnit.MILLISECONDS.sleep(getSleepTime());
         }
     }
 

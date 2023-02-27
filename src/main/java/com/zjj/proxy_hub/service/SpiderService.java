@@ -13,17 +13,13 @@ public interface SpiderService {
         return 400L;
     }
 
-    default void resolve() {
+    default void resolve() throws InterruptedException {
         int pageIndex = 1;
         while (pageIndex <= getMaxPage()) {
             if (!solve_single_page(pageIndex++)) {
                 return;
             }
-            try {
-                TimeUnit.MILLISECONDS.sleep(getSleepTime());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            TimeUnit.MILLISECONDS.sleep(getSleepTime());
         }
     }
 

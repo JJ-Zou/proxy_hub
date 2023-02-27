@@ -1,8 +1,6 @@
 package com.zjj.proxy_hub.scheduler;
 
-import com.zjj.proxy_hub.middleware.ProxyPool;
 import com.zjj.proxy_hub.service.SpiderService;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -45,8 +42,13 @@ public class SpiderScheduler implements ApplicationContextAware {
         CountDownLatch countDownLatch = new CountDownLatch(beansOfType.size());
         for (SpiderService spiderService : beansOfType.values()) {
             taskScheduler.schedule(() -> {
-                spiderService.resolve();
-                countDownLatch.countDown();
+                try {
+                    spiderService.resolve();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
             }, Instant.now());
         }
         countDownLatch.await();
