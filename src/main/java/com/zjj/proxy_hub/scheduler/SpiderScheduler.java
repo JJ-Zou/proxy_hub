@@ -12,18 +12,13 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
 public class SpiderScheduler implements ApplicationContextAware {
 
-    private final AtomicBoolean running = new AtomicBoolean(false);
-
     @Autowired
     private TaskScheduler taskScheduler;
-
 
     private ApplicationContext applicationContext;
 
@@ -32,27 +27,18 @@ public class SpiderScheduler implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    @Scheduled(initialDelay = 2000, fixedDelay = 2 * 60 * 1000)
+    @Scheduled(initialDelay = 2000, fixedRate = 5 * 60 * 1000)
     public void ScheduleResolve() throws InterruptedException {
-        if (running.get()) {
-            return;
-        }
-        running.set(true);
         Map<String, SpiderService> beansOfType = applicationContext.getBeansOfType(SpiderService.class);
-        CountDownLatch countDownLatch = new CountDownLatch(beansOfType.size());
         for (SpiderService spiderService : beansOfType.values()) {
             taskScheduler.schedule(() -> {
                 try {
                     spiderService.resolve();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
-                    countDownLatch.countDown();
                 }
             }, Instant.now());
         }
-        countDownLatch.await();
-        running.set(false);
     }
 
 }
