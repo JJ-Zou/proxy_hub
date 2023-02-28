@@ -1,6 +1,7 @@
 package com.zjj.proxy_hub.scheduler;
 
 import com.zjj.proxy_hub.service.SpiderService;
+import com.zjj.proxy_hub.middleware.ProxyPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class SpiderScheduler implements ApplicationContextAware {
     @Autowired
     private TaskScheduler taskScheduler;
 
+    @Autowired
+    private ProxyPool proxyPool;
+
     private ApplicationContext applicationContext;
 
     @Override
@@ -29,6 +33,9 @@ public class SpiderScheduler implements ApplicationContextAware {
 
     @Scheduled(initialDelay = 2000, fixedRate = 5 * 60 * 1000)
     public void ScheduleResolve() throws InterruptedException {
+        if (proxyPool.size() > 0) {
+            return;
+        }
         Map<String, SpiderService> beansOfType = applicationContext.getBeansOfType(SpiderService.class);
         for (SpiderService spiderService : beansOfType.values()) {
             taskScheduler.schedule(() -> {
