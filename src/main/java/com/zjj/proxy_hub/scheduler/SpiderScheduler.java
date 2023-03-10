@@ -32,8 +32,9 @@ public class SpiderScheduler implements ApplicationContextAware {
     }
 
     @Scheduled(initialDelay = 2000, fixedRate = 5 * 60 * 1000)
-    public void ScheduleResolve() throws InterruptedException {
+    public void ScheduleResolve() {
         if (proxyPool.size() > 0) {
+            log.info("代理池中还剩余 {} 个可用ip, skip resolve", proxyPool.size());
             return;
         }
         Map<String, SpiderService> beansOfType = applicationContext.getBeansOfType(SpiderService.class);

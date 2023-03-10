@@ -1,41 +1,53 @@
 package com.zjj.proxy_hub.controller;
 
-import com.zjj.proxy_hub.controller.resp.ProxyIpResponse;
 import com.zjj.proxy_hub.middleware.ProxyPool;
 import com.zjj.proxy_hub.model.ProxyIp;
 import com.zjj.proxy_hub.scheduler.SpiderScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping(value = "/proxy")
 public class ProxyIpController {
 
     @Autowired
     private ProxyPool proxyPool;
 
-    @GetMapping
-    public ProxyIp getProxyIp() {
-        return proxyPool.popProxy();
+    @Autowired
+    private SpiderScheduler spiderScheduler;
+
+    @PostMapping
+    public ResponseEntity<ProxyIp> popProxyIp() {
+        ProxyIp proxyIp = proxyPool.popProxy();
+        if (proxyIp == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(proxyIp, HttpStatus.OK);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public Boolean delProxyIp(@RequestBody ProxyIp ip) {
         return proxyPool.removeProxy(ip);
     }
 
-
     @GetMapping("/all")
-    public List<ProxyIp> listAllProxyIp() {
-        return proxyPool.listAll();
+    public ResponseEntity<List<ProxyIp>> listAllProxyIp() {
+        return new ResponseEntity<>(proxyPool.listAll(), HttpStatus.OK);
     }
 
-
     @GetMapping("/count")
-    public Integer countProxyIp() {
-        return proxyPool.size();
+    public ResponseEntity<Integer> countProxyIp() {
+        return new ResponseEntity<>(proxyPool.size(), HttpStatus.OK);
+    }
+
+    @PostMapping("/trigger")
+    public ResponseEntity<?> trigger() {
+        spiderScheduler.ScheduleResolve();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
