@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -34,7 +35,8 @@ public class XsSpiderServiceImpl implements SpiderService {
     Pattern compile = Pattern.compile("[^0-9]");
 
     @Autowired
-    private RestTemplate restTemplateGb2312;
+    @Qualifier("restTemplateUTF8")
+    private RestTemplate restTemplate;
 
     @Autowired
     private ProxyPool proxyPool;
@@ -49,7 +51,7 @@ public class XsSpiderServiceImpl implements SpiderService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = restTemplateGb2312.exchange(INDEX_URL, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplate.exchange(INDEX_URL, HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
             log.error("拉取错误 {}", html);
@@ -72,7 +74,7 @@ public class XsSpiderServiceImpl implements SpiderService {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/html,application/xhtml+xml,application/xml;");
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> resp = restTemplateGb2312.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> resp = restTemplate.exchange(URL + page + ".html", HttpMethod.GET, entity, String.class);
         String html = resp.getBody();
         if (resp.getStatusCode() != HttpStatusCode.valueOf(200) || html == null) {
             log.error("拉取错误 {}", html);

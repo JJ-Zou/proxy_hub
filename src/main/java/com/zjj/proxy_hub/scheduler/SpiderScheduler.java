@@ -1,7 +1,7 @@
 package com.zjj.proxy_hub.scheduler;
 
-import com.zjj.proxy_hub.service.SpiderService;
 import com.zjj.proxy_hub.middleware.ProxyPool;
+import com.zjj.proxy_hub.service.SpiderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

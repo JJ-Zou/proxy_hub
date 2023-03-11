@@ -12,5 +12,5 @@ public class ProxyIp {
 
     private int port;
 
-    private int lastVerifyTime;
+    private long lastVerifyTime;
 }

@@ -1,14 +1,12 @@
 package com.zjj.proxy_hub.middleware;
 
 import com.zjj.proxy_hub.model.ProxyIp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class ProxyPool {
